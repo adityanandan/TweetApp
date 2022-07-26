@@ -1,0 +1,9 @@
+package com.tweetapp.exception;
+
+public class ResourceAlreadyPresentException extends Exception {
+
+	public ResourceAlreadyPresentException(String string) {
+		// TODO Auto-generated constructor stub
+	}
+
+}

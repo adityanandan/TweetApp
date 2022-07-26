@@ -1,0 +1,5 @@
+package com.tweetapp.exception;
+
+public class ResourceAlreadyPresentException extends Exception {
+
+}

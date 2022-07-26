@@ -1,0 +1,78 @@
+package com.tweetapp.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import com.tweetapp.exception.ResourceAlreadyPresentException;
+import com.tweetapp.models.User;
+import com.tweetapp.repository.UserRepository;
+import com.tweetapp.serviceimpl.UserServiceImpl;
+
+@SpringBootTest
+class UserServiceTest {
+
+	@InjectMocks
+	public UserServiceImpl userService;
+
+	@MockBean
+	public UserRepository userRepository;
+
+	@Mock
+	public User user;
+
+
+	public void setUser() {
+		user = new User();
+		user.setId("sasha");
+		user.setFirstName("Sasha");
+		user.setLastName("Muller");
+		user.setContactNumber("1234567890");
+		user.setEmail("qwerty@gmail.com");
+		user.setPassword("asdfgh");
+	}
+
+	@Test
+	void testGetAllUsers()  {
+		setUser();
+		List<User> userList = new ArrayList<>();
+		userList.add(user);
+		when(userRepository.findAll()).thenReturn(userList);
+		List<User> allUsers = userService.getAllUsers();
+		assertNotNull(allUsers);
+	}
+
+	@Test
+	void testSearchUser_UsersPresent() {
+		setUser();
+		List<User> userList = new ArrayList<>();
+		userList.add(user);
+		when(userRepository.findByUsernameContaining("sas")).thenReturn(userList);
+		 List<User> userByUsername = userService.getUserByUsername("sas");
+		assertFalse(userByUsername.isEmpty());
+	}
+
+	@Test
+	void testSearchUser_NoUserPresent() {
+		when(userRepository.findByUsernameContaining(anyString())).thenReturn(Collections.emptyList());
+		List<User> userResponseList = userService.getUserByUsername("sas");
+		assertTrue(userResponseList.isEmpty());
+	}
+
+}
