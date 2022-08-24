@@ -23,7 +23,7 @@ public interface TweetService {
 
 	List<Tweet> getAllTweetsByUsername(String username);
 
-	Tweet replyTweetById(Tweet replyTweet, String parentTweetId) throws TweetException;
+	void replyTweetById(Tweet replyTweet, String parentTweetId) throws TweetException;
 
 	void deleteTweetById(String tweetId);
 

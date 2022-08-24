@@ -144,14 +144,15 @@ public class TweetAppController {
 	}
 
 	@PostMapping("/{username}/reply/{id}")
-	public ResponseEntity<Tweet> replyTweetByUser(@PathVariable("username") String username,
+	public ResponseEntity<HttpStatus> replyTweetByUser(@PathVariable("username") String username,
 			@PathVariable("id") String tweetId, @RequestBody Tweet replyTweet) {
 
 		try {
-			return new ResponseEntity<>(tweetService.replyTweetById(replyTweet, tweetId), HttpStatus.OK);
-		} catch (Exception e) {
+			tweetService.replyTweetById(replyTweet, tweetId);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (TweetException e) {
 			e.printStackTrace();
-			return new ResponseEntity<>(new Tweet(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 

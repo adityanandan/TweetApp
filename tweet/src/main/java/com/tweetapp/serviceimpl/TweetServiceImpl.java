@@ -1,5 +1,6 @@
 package com.tweetapp.serviceimpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,11 +70,11 @@ public class TweetServiceImpl implements TweetService {
 
 	@Override
 	public Tweet postTweetByUsername(Tweet tweet, String username) throws TweetException {
-		User user = userRepository.findByUsername(username);
-		if(user==null) {
+		Optional<User> user = userRepository.findByUsername(username);
+		if(!user.isPresent()) {
 			throw new TweetException("user not present");
 		}
-		tweet.setUser(user);
+		tweet.setUser(user.get());
 		return tweetRepository.save(tweet);
 
 	}
@@ -85,16 +86,23 @@ public class TweetServiceImpl implements TweetService {
 	}
 
 	@Override
-	public Tweet replyTweetById(Tweet replyTweet, String parentTweetId) throws TweetException {
+	public void replyTweetById(Tweet replyTweet, String parentTweetId) throws TweetException {
 		Optional<Tweet> parentTweet = tweetRepository.findById(parentTweetId);
-		if (parentTweet.isPresent()) {
-			List<Tweet> replies = parentTweet.get().getReplies();
-			replies.add(replyTweet);
-			tweetRepository.save(parentTweet.get());
-		} else {
+		if (parentTweet.isEmpty()){
 			throw new TweetException("Incorrect or deleted parent tweet id.");
 		}
-		return replyTweet;
+		if(parentTweet.get().getReplies()==null) {
+			List<Tweet> replies=new ArrayList<>();
+			replies.add(replyTweet);
+			parentTweet.get().setReplies(replies);
+			tweetRepository.save(parentTweet.get());
+		}
+		else {
+			List<Tweet> replies = parentTweet.get().getReplies();
+			replies.add(replyTweet);
+			parentTweet.get().setReplies(replies);
+			tweetRepository.save(parentTweet.get());
+		}
 
 	}
 

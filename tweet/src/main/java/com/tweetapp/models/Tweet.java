@@ -20,7 +20,7 @@ public class Tweet {
 	private long likes;
 	private User user;
 	private List<Tweet> replies;
-	@Size(min=2,max=50)
+	@Size(max=50)
 	private String tweetTag;
 
 	public String getId() {
